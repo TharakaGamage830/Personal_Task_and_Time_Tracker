@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { Task } from './tasks/task.entity';
 import { TimeSession } from './time-tracking/time-session.entity';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { TimeSession } from './time-tracking/time-session.entity';
     UsersModule,
     AuthModule,
     TasksModule,
-    TimeTrackingModule
+    TimeTrackingModule,
+    DashboardModule
   ],
 })
 export class AppModule {}
