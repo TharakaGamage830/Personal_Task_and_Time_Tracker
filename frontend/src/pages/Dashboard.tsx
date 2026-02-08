@@ -7,7 +7,7 @@ import { StatsGrid } from '../components/StatsGrid';
 import { TaskList } from '../components/TaskList';
 import { CreateTaskForm } from '../components/CreateTaskForm';
 import { Button } from '../components/Button';
-import { Plus, LogOut, CheckSquare } from 'lucide-react';
+import { Plus, LogOut } from 'lucide-react';
 
 const Dashboard = () => {
     const [isCreating, setIsCreating] = useState(false);
@@ -32,12 +32,16 @@ const Dashboard = () => {
             <nav className="navbar">
                 <div className="navbar-container">
                     <Link to="/" className="navbar-brand">
-                        <CheckSquare size={24} />
-                        <span>TaskTracker</span>
+                        <img src="/logo.png" alt="Logo" className="navbar-logo" />
+                        <span className="navbar-title">Task Tracker</span>
                     </Link>
 
                     <div className="navbar-actions">
-                        <span className="navbar-user">{user?.name}</span>
+                        <div className="navbar-user-info">
+                            <span className="navbar-user-name">{user?.name}</span>
+                            <span className="navbar-user-email">{user?.email}</span>
+                        </div>
+                        <div className="navbar-divider"></div>
                         <Button variant="ghost" onClick={handleLogout}>
                             <LogOut size={16} />
                             Logout

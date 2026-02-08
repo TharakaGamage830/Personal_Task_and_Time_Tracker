@@ -6,6 +6,8 @@ interface Task {
     description?: string;
     is_completed: boolean;
     total_time_seconds: number;
+    timer_running?: boolean;
+    timer_start_time?: string;
 }
 
 interface TaskListProps {
@@ -18,14 +20,14 @@ interface TaskListProps {
     onUpdate: () => void;
 }
 
-export const TaskList = ({ 
-    tasks, 
-    loading, 
-    onToggleComplete, 
-    onDelete, 
-    onStartTimer, 
-    onStopTimer, 
-    onUpdate 
+export const TaskList = ({
+    tasks,
+    loading,
+    onToggleComplete,
+    onDelete,
+    onStartTimer,
+    onStopTimer,
+    onUpdate
 }: TaskListProps) => {
     if (loading) {
         return (
@@ -46,9 +48,9 @@ export const TaskList = ({
     return (
         <div className="task-list">
             {tasks.map(task => (
-                <TaskCard 
-                    key={task.id} 
-                    task={task} 
+                <TaskCard
+                    key={task.id}
+                    task={task}
                     onToggleComplete={onToggleComplete}
                     onDelete={onDelete}
                     onStartTimer={onStartTimer}

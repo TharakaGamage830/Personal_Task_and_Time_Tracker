@@ -31,10 +31,10 @@ export const deleteTask = async (id: number) => {
 
 // Start timer
 export const startTimer = async (id: number) => {
-    await client.post(`/tasks/${id}/timer/start`);
+    await client.post(`/time-tracking/${id}/timer/start`);
 };
 
 // Stop timer
 export const stopTimer = async (id: number) => {
-    await client.post(`/tasks/${id}/timer/stop`);
+    await client.post(`/time-tracking/${id}/timer/stop`);
 };

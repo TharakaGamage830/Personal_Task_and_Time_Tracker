@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { Button } from './Button';
 import { Play, Square, Trash2, CheckCircle, Circle } from 'lucide-react';
@@ -9,6 +9,8 @@ interface Task {
     description?: string;
     is_completed: boolean;
     total_time_seconds: number;
+    timer_running?: boolean;
+    timer_start_time?: string;
 }
 
 interface TaskCardProps {
@@ -20,15 +22,38 @@ interface TaskCardProps {
     onUpdate: () => void;
 }
 
-export const TaskCard = ({ 
-    task, 
-    onToggleComplete, 
-    onDelete, 
-    onStartTimer, 
-    onStopTimer, 
-    onUpdate 
+export const TaskCard = ({
+    task,
+    onToggleComplete,
+    onDelete,
+    onStartTimer,
+    onStopTimer,
+    onUpdate
 }: TaskCardProps) => {
-    const [isRunning, setIsRunning] = useState(false);
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+    // Calculate elapsed time when timer is running
+    useEffect(() => {
+        if (task.timer_running && task.timer_start_time) {
+            const startTime = new Date(task.timer_start_time).getTime();
+
+            // Update immediately
+            const updateElapsed = () => {
+                const now = Date.now();
+                const elapsed = Math.floor((now - startTime) / 1000);
+                setElapsedSeconds(elapsed);
+            };
+
+            updateElapsed();
+
+            // Update every second
+            const interval = setInterval(updateElapsed, 1000);
+
+            return () => clearInterval(interval);
+        } else {
+            setElapsedSeconds(0);
+        }
+    }, [task.timer_running, task.timer_start_time]);
 
     const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600);
@@ -57,21 +82,23 @@ export const TaskCard = ({
     const handleStartTimer = async () => {
         try {
             await onStartTimer(task.id);
-            setIsRunning(true);
+            onUpdate(); // Refresh to get updated timer state from backend
         } catch (error) {
-            alert('Could not start timer (another timer might be running)');
+            alert('Could not start timer');
         }
     };
 
     const handleStopTimer = async () => {
         try {
             await onStopTimer(task.id);
-            setIsRunning(false);
             onUpdate();
         } catch (error) {
             console.error('Failed to stop timer:', error);
         }
     };
+
+    // Total display time = saved total + current session elapsed
+    const displayTime = task.total_time_seconds + (task.timer_running ? elapsedSeconds : 0);
 
     return (
         <Card className="task-card">
@@ -84,14 +111,15 @@ export const TaskCard = ({
                             <Circle className="task-icon-incomplete" />
                         )}
                     </button>
-                    
+
                     <div className="task-info">
                         <h3 className={task.is_completed ? 'task-title-completed' : ''}>
                             {task.title}
                         </h3>
                         {task.description && <p className="task-description">{task.description}</p>}
-                        <div className="task-time">
-                            Total: {formatTime(task.total_time_seconds)}
+                        <div className={`task-time ${task.timer_running ? 'task-time-running' : ''}`}>
+                            {task.timer_running && <span className="timer-indicator">⏱️ </span>}
+                            Total: {formatTime(displayTime)}
                         </div>
                     </div>
                 </div>
@@ -99,7 +127,7 @@ export const TaskCard = ({
                 <div className="task-actions">
                     {!task.is_completed && (
                         <>
-                            {!isRunning ? (
+                            {!task.timer_running ? (
                                 <Button variant="primary" onClick={handleStartTimer} className="btn-icon">
                                     <Play size={16} />
                                 </Button>
