@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { Button } from './Button';
-import { Play, Square, Trash2, CheckCircle, Circle } from 'lucide-react';
+import { Play, Square, Trash2, CheckCircle, Circle, Calendar } from 'lucide-react';
 
 interface Task {
     id: number;
@@ -12,6 +12,8 @@ interface Task {
     total_time_seconds: number;
     timer_running?: boolean;
     timer_start_time?: string;
+    created_at: string;
+    completed_at?: string | null;
 }
 
 const priorityConfig = {
@@ -69,9 +71,20 @@ export const TaskCard = ({
         return `${h}h ${m}m ${s}s`;
     };
 
+    const formatDate = (dateString: string | null | undefined) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
     const handleToggleComplete = async () => {
         try {
             await onToggleComplete(task.id);
+            onUpdate();
         } catch (error) {
             console.error('Failed to toggle task:', error);
         }
@@ -89,7 +102,7 @@ export const TaskCard = ({
     const handleStartTimer = async () => {
         try {
             await onStartTimer(task.id);
-            onUpdate(); // Refresh to get updated timer state from backend
+            onUpdate();
         } catch (error) {
             alert('Could not start timer');
         }
@@ -124,9 +137,22 @@ export const TaskCard = ({
                             {task.title}
                         </h3>
                         {task.description && <p className="task-description">{task.description}</p>}
-                        <div className={`task-time ${task.timer_running ? 'task-time-running' : ''}`}>
-                            {task.timer_running && <span className="timer-indicator">⏱️ </span>}
-                            Total: {formatTime(displayTime)}
+
+                        <div className="task-meta">
+                            <div className={`task-time ${task.timer_running ? 'task-time-running' : ''}`}>
+                                {task.timer_running && <span className="timer-indicator">⏱️ </span>}
+                                Total: {formatTime(displayTime)}
+                            </div>
+                            <div className="task-dates">
+                                <span className="task-date">
+                                    <Calendar size={12} /> Created: {formatDate(task.created_at)}
+                                </span>
+                                {task.is_completed && task.completed_at && (
+                                    <span className="task-date task-date-completed">
+                                        ✓ Completed: {formatDate(task.completed_at)}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

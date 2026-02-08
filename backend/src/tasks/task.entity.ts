@@ -23,6 +23,9 @@ export class Task {
     @Column({ default: 'medium' })
     priority: 'low' | 'medium' | 'high';
 
+    @Column({ type: 'timestamp', nullable: true })
+    completed_at: Date | null;
+
     @Column({ default: 0 })
     total_time_seconds: number;
 

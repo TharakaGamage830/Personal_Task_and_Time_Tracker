@@ -9,6 +9,8 @@ interface Task {
     total_time_seconds: number;
     timer_running?: boolean;
     timer_start_time?: string;
+    created_at: string;
+    completed_at?: string | null;
 }
 
 interface TaskListProps {

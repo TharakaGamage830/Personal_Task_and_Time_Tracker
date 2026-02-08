@@ -64,6 +64,7 @@ export class TasksService {
     async toggleComplete(id: number, userId: number): Promise<Task> {
         const task = await this.findOne(id, userId);
         task.is_completed = !task.is_completed;
+        task.completed_at = task.is_completed ? new Date() : null;
         return this.tasksRepository.save(task);
     }
 
