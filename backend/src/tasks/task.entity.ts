@@ -3,7 +3,7 @@ import { User } from "src/users/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('tasks')
-export class Task{
+export class Task {
 
     @PrimaryGeneratedColumn('increment')
     id: number;
@@ -19,6 +19,12 @@ export class Task{
 
     @Column({ default: false })
     is_completed: boolean;
+
+    @Column({ default: 'medium' })
+    priority: 'low' | 'medium' | 'high';
+
+    @Column({ type: 'timestamp', nullable: true })
+    completed_at: Date | null;
 
     @Column({ default: 0 })
     total_time_seconds: number;
