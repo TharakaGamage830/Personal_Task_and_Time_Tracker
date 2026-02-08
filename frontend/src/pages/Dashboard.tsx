@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTasks } from '../hooks/useTasks';
@@ -7,22 +7,33 @@ import { StatsGrid } from '../components/StatsGrid';
 import { TaskList } from '../components/TaskList';
 import { CreateTaskForm } from '../components/CreateTaskForm';
 import { Button } from '../components/Button';
-import { Plus, LogOut } from 'lucide-react';
+import { Plus, LogOut, Search } from 'lucide-react';
 
 const Dashboard = () => {
     const [isCreating, setIsCreating] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { stats } = useDashboardStats();
     const { tasks, loading, createTask, toggleComplete, deleteTask, startTimer, stopTimer, refetch } = useTasks();
+
+    // Filter tasks by search query
+    const filteredTasks = useMemo(() => {
+        if (!searchQuery.trim()) return tasks;
+        const query = searchQuery.toLowerCase();
+        return tasks.filter(task =>
+            task.title.toLowerCase().includes(query) ||
+            (task.description && task.description.toLowerCase().includes(query))
+        );
+    }, [tasks, searchQuery]);
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const handleCreateTask = async (title: string, description?: string) => {
-        await createTask(title, description);
+    const handleCreateTask = async (title: string, description?: string, priority?: 'low' | 'medium' | 'high') => {
+        await createTask(title, description, priority);
         setIsCreating(false);
     };
 
@@ -33,7 +44,7 @@ const Dashboard = () => {
                 <div className="navbar-container">
                     <Link to="/" className="navbar-brand">
                         <img src="/logo.png" alt="Logo" className="navbar-logo" />
-                        <span className="navbar-title">Task Tracker</span>
+                        <span className="navbar-title">ANKA Task Tracker</span>
                     </Link>
 
                     <div className="navbar-actions">
@@ -72,9 +83,21 @@ const Dashboard = () => {
                 )}
 
                 <div className="tasks-section">
-                    <h2>My Tasks</h2>
+                    <div className="tasks-header">
+                        <h2>My Tasks</h2>
+                        <div className="search-box">
+                            <Search size={18} className="search-icon" />
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search tasks..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
                     <TaskList
-                        tasks={tasks}
+                        tasks={filteredTasks}
                         loading={loading}
                         onToggleComplete={toggleComplete}
                         onDelete={deleteTask}

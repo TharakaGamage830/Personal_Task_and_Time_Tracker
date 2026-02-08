@@ -8,10 +8,17 @@ interface Task {
     title: string;
     description?: string;
     is_completed: boolean;
+    priority: 'low' | 'medium' | 'high';
     total_time_seconds: number;
     timer_running?: boolean;
     timer_start_time?: string;
 }
+
+const priorityConfig = {
+    low: { label: 'Low', color: 'priority-low', emoji: '🟢' },
+    medium: { label: 'Medium', color: 'priority-medium', emoji: '🟡' },
+    high: { label: 'High', color: 'priority-high', emoji: '🔴' },
+};
 
 interface TaskCardProps {
     task: Task;
@@ -101,7 +108,7 @@ export const TaskCard = ({
     const displayTime = task.total_time_seconds + (task.timer_running ? elapsedSeconds : 0);
 
     return (
-        <Card className="task-card">
+        <Card className={`task-card ${priorityConfig[task.priority || 'medium'].color}`}>
             <div className="task-content">
                 <div className="task-left">
                     <button onClick={handleToggleComplete} className="task-checkbox">

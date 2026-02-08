@@ -7,8 +7,8 @@ export const getTasks = async () => {
 };
 
 // Create task
-export const createTask = async (title: string, description?: string) => {
-    const { data } = await client.post('/tasks', { title, description });
+export const createTask = async (title: string, description?: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
+    const { data } = await client.post('/tasks', { title, description, priority });
     return data;
 };
 

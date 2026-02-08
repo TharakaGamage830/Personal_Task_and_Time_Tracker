@@ -5,6 +5,7 @@ interface Task {
     title: string;
     description?: string;
     is_completed: boolean;
+    priority: 'low' | 'medium' | 'high';
     total_time_seconds: number;
     timer_running?: boolean;
     timer_start_time?: string;
