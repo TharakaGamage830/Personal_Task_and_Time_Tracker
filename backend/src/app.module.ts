@@ -17,19 +17,46 @@ import { DashboardModule } from './dashboard/dashboard.module';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (ConfigService: ConfigService) =>({
-        type: 'postgres',
-        host: ConfigService.get<string>('DB_HOST'),
-        port: ConfigService.get<number>('DB_PORT'),
-        username: ConfigService.get<string>('DB_USER'),
-        password: ConfigService.get<string>('DB_PASSWORD'),
-        database: ConfigService.get<string>('DB_NAME'),
-        entities: [User, Task, TimeSession],
-        synchronize: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+
+        // debuggin logging
+        console.log('==========================================');
+        console.log('DATABASE CONNECTION DEBUG:');
+        console.log('DATABASE_URL exists:', !!databaseUrl);
+        console.log('DATABASE_URL value:', databaseUrl ? databaseUrl.substring(0, 50) + '...' : 'NOT SET');
+        console.log('NODE_ENV:', configService.get('NODE_ENV'));
+        console.log('All env keys:', Object.keys(process.env).filter(k => k.includes('DATA')));
+        console.log('==========================================');
+
+        if (databaseUrl) {
+          console.log('✅ Using DATABASE_URL connection');
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: [User, Task, TimeSession],
+            synchronize: configService.get('NODE_ENV') !== 'production',
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          };
+        } else {
+          console.log('❌ DATABASE_URL not found, using fallback config');
+          return {
+            type: 'postgres',
+            host: configService.get<string>('DB_HOST'),
+            port: configService.get<number>('DB_PORT'),
+            username: configService.get<string>('DB_USER'),
+            password: configService.get<string>('DB_PASSWORD'),
+            database: configService.get<string>('DB_NAME'),
+            entities: [User, Task, TimeSession],
+            synchronize: true,
+          };
+        }
+      },
       inject: [ConfigService],
     }),
-    
+
     UsersModule,
     AuthModule,
     TasksModule,
@@ -37,5 +64,4 @@ import { DashboardModule } from './dashboard/dashboard.module';
     DashboardModule
   ],
 })
-export class AppModule {}
-
+export class AppModule { }

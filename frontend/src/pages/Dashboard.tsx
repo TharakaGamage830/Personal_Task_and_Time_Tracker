@@ -80,7 +80,7 @@ const Dashboard = () => {
                 <div className="navbar-container">
                     <Link to="/" className="navbar-brand">
                         <img src="/logo.png" alt="Logo" className="navbar-logo" />
-                        <span className="navbar-title">ANKA Task Tracker</span>
+                        <span className="navbar-title">Task Tracker</span>
                     </Link>
 
                     <div className="navbar-actions">
