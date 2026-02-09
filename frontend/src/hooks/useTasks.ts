@@ -17,7 +17,6 @@ interface Task {
 export const useTasks = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     const fetchTasks = async (showLoading = false) => {
         try {
@@ -35,12 +34,11 @@ export const useTasks = () => {
             console.error('Failed to fetch tasks:', error);
         } finally {
             setLoading(false);
-            setIsInitialLoad(false);
         }
     };
 
     useEffect(() => {
-        fetchTasks(true); // Show loading only on initial load
+        fetchTasks(true);
     }, []);
 
     const createTask = async (title: string, description?: string, priority: 'low' | 'medium' | 'high' = 'medium') => {

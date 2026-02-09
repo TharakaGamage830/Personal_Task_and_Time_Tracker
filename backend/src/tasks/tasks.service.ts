@@ -30,7 +30,7 @@ export class TasksService {
             where: taskIds.map(id => ({ task_id: id, end_time: IsNull() }))
         });
 
-        // Map sessions to tasks
+      
         const sessionMap = new Map(runningSessions.map(s => [s.task_id, s]));
 
         return tasks.map(task => ({

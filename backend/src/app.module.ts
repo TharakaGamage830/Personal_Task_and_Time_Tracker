@@ -20,9 +20,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
 
-        // DEBUG LOGGING - CRITICAL!
+        // debuggin logging
         console.log('==========================================');
-        console.log('🔍 DATABASE CONNECTION DEBUG:');
+        console.log('DATABASE CONNECTION DEBUG:');
         console.log('DATABASE_URL exists:', !!databaseUrl);
         console.log('DATABASE_URL value:', databaseUrl ? databaseUrl.substring(0, 50) + '...' : 'NOT SET');
         console.log('NODE_ENV:', configService.get('NODE_ENV'));
