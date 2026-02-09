@@ -18,11 +18,19 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-
         const databaseUrl = configService.get<string>('DATABASE_URL');
 
-        if (databaseUrl) {
+        // DEBUG LOGGING - CRITICAL!
+        console.log('==========================================');
+        console.log('🔍 DATABASE CONNECTION DEBUG:');
+        console.log('DATABASE_URL exists:', !!databaseUrl);
+        console.log('DATABASE_URL value:', databaseUrl ? databaseUrl.substring(0, 50) + '...' : 'NOT SET');
+        console.log('NODE_ENV:', configService.get('NODE_ENV'));
+        console.log('All env keys:', Object.keys(process.env).filter(k => k.includes('DATA')));
+        console.log('==========================================');
 
+        if (databaseUrl) {
+          console.log('✅ Using DATABASE_URL connection');
           return {
             type: 'postgres',
             url: databaseUrl,
@@ -33,6 +41,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
             },
           };
         } else {
+          console.log('❌ DATABASE_URL not found, using fallback config');
           return {
             type: 'postgres',
             host: configService.get<string>('DB_HOST'),
