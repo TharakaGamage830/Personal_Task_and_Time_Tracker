@@ -31,11 +31,14 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    
+
                     <Route element={<PrivateRoute />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Route>
+
+                    {/* Catch-all route: Redirect to root */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>
