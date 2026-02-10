@@ -35,7 +35,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
             type: 'postgres',
             url: databaseUrl,
             entities: [User, Task, TimeSession],
-            synchronize: configService.get('NODE_ENV') !== 'production',
+            synchronize: true,
             ssl: {
               rejectUnauthorized: false,
             },
